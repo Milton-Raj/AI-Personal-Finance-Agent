@@ -1,29 +1,43 @@
-# AI Personal Finance Fixer (Micro-Expense Detective) 🔍💰
+# Smart Spend - AI Personal Finance Manager
 
-A smart mobile application that automatically detects wasteful spending, identifies subscription leaks, and suggests money-saving alternatives.
+A comprehensive mobile application for intelligent personal finance management with AI-powered insights.
 
-## 🎯 Features
+## 🚀 Features
 
-- **Smart Leak Detection**: Automatically identifies wasteful spending patterns
-- **Subscription Tracker**: Monitor all your subscriptions and detect price increases
-- **Transaction Analysis**: View and analyze all your transactions with smart categorization
-- **Actionable Insights**: Get personalized suggestions to save money
-- **Beautiful UI**: Modern, premium dark mode design with smooth animations
+- **Smart Onboarding**: Beautiful splash screen, authentication flow, and personalized setup
+- **Transaction Tracking**: Automatic SMS parsing and categorization
+- **Budget Management**: Set and track budgets by category
+- **Financial Goals**: Create and monitor savings goals
+- **Premium Membership**: Unlock advanced features with premium subscription
+- **AI Insights**: Get intelligent spending suggestions and leak detection
 
-## 🚀 Getting Started
+## 📁 Project Structure
+
+```
+AI Personal Finance/
+├── mobile-app/           # React Native (Expo) mobile application
+├── Backend/              # FastAPI backend server
+├── App Database/         # SQLite database files
+│   ├── schema.sql       # Database schema
+│   └── smart_spend.db   # SQLite database file
+├── init_db.py           # Database initialization script
+├── test_db.py           # Database test script
+└── API_DOCUMENTATION.md # API endpoints documentation
+```
+
+## 🛠️ Setup Instructions
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 18+
+- Python 3.9+
 - Expo CLI
-- iOS Simulator (for Mac) or Android Emulator
+- SQLite
 
-### Installation
+### Mobile App Setup
 
-1. Clone the repository:
+1. Navigate to mobile app directory:
 ```bash
-cd "AI Personal Finance/mobile-app"
+cd mobile-app
 ```
 
 2. Install dependencies:
@@ -36,98 +50,132 @@ npm install
 npm start
 ```
 
-4. Run on your preferred platform:
+4. Run on your device:
+- Scan QR code with Expo Go app (iOS/Android)
+- Or press `i` for iOS simulator
+- Or press `a` for Android emulator
+
+### Backend Setup
+
+1. Navigate to backend directory:
 ```bash
-# iOS
-npm run ios
-
-# Android
-npm run android
-
-# Web
-npm run web
+cd Backend
 ```
 
-## 📱 App Structure
-
-```
-mobile-app/
-├── src/
-│   ├── components/       # Reusable UI components
-│   │   ├── Button.js
-│   │   ├── Card.js
-│   │   └── LeakBadge.js
-│   ├── navigation/       # Navigation setup
-│   │   └── AppNavigator.js
-│   ├── screens/          # Main app screens
-│   │   ├── HomeScreen.js
-│   │   ├── InsightsScreen.js
-│   │   ├── TransactionsScreen.js
-│   │   └── SubscriptionsScreen.js
-│   ├── services/         # Data services
-│   │   └── mockData.js
-│   ├── theme/            # Design system
-│   │   ├── colors.js
-│   │   ├── typography.js
-│   │   ├── spacing.js
-│   │   └── index.js
-│   └── utils/            # Helper functions
-│       └── helpers.js
-└── App.js               # Root component
+2. Create and activate virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-## 🎨 Design System
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-The app uses a comprehensive design system with:
-- **Dark Mode**: Premium dark theme with vibrant accents
-- **Color Palette**: Carefully selected colors for different leak severities
-- **Typography**: Consistent font sizes and weights
-- **Spacing**: Standardized spacing scale
-- **Components**: Reusable, themeable components
+4. Initialize the database (from project root):
+```bash
+python3 init_db.py
+```
 
-## 🔮 Upcoming Features
+5. Test database connection:
+```bash
+python3 test_db.py
+```
 
-- [ ] SMS Reading (Android)
-- [ ] Screenshot OCR (iOS)
-- [ ] Backend Integration
-- [ ] AI-powered leak detection
-- [ ] Push notifications
-- [ ] Budget planning
-- [ ] Savings goals
+6. Start the backend server:
+```bash
+cd Backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-## 📊 Current Status
+7. Access API documentation:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-✅ **Completed:**
-- Premium UI/UX design
-- Navigation setup
-- Home screen with balance overview
-- Insights screen with leak analysis
-- Transactions screen with search/filter
-- Subscriptions screen
-- Mock data integration
-- Theme system
+### Update Mobile App Config
 
-🚧 **In Progress:**
-- Backend API development
-- Real SMS parsing
-- Database integration
+Update the API URL in `mobile-app/src/config.js`:
+```javascript
+export const API_URL = 'http://YOUR_LOCAL_IP:8000';
+```
 
-## 🛠️ Tech Stack
+## 📱 App Flow
 
-- **Framework**: React Native (Expo)
-- **Navigation**: React Navigation
-- **UI**: Custom components with Expo Linear Gradient
-- **Icons**: Expo Vector Icons (Ionicons)
-- **State**: React Hooks
+1. **Splash Screen** → Animated "Smart Spend" logo (2.5s)
+2. **Login/Register** → Dummy authentication (for now)
+3. **Personal Information** → Collect DOB and monthly income
+4. **Home Screen** → Dashboard with financial overview
+5. **Premium Upgrade** → Unlock advanced features with celebration confetti
 
-## 📝 License
+## 🗄️ Database Schema
 
-This project is private and proprietary.
+### Tables
+- **users**: User accounts and profile information
+- **categories**: Income/expense categories
+- **transactions**: Financial transactions
+- **budgets**: Budget tracking by category
+- **goals**: Savings goals
 
-## 👨‍💻 Developer
+See `App Database/schema.sql` for complete schema.
+
+## 🔌 API Endpoints
+
+See `API_DOCUMENTATION.md` for complete API reference.
+
+Key endpoints:
+- `GET /profile` - Get user profile
+- `PUT /profile` - Update profile
+- `POST /transactions` - Create transaction
+- `POST /payment/initiate` - Start premium payment
+- `POST /payment/verify` - Verify payment
+
+## 🎨 Tech Stack
+
+### Mobile App
+- React Native (Expo SDK 54)
+- React Navigation
+- Expo Linear Gradient
+- React Native Confetti Cannon
+- DateTimePicker
+
+### Backend
+- FastAPI
+- SQLAlchemy
+- SQLite
+- Pydantic
+
+## 📝 Development Notes
+
+### Current Status
+- ✅ Mobile app UI/UX complete
+- ✅ Onboarding flow implemented
+- ✅ Database schema created
+- ✅ Backend API structure ready
+- ⏳ Real authentication pending
+- ⏳ Payment gateway integration (Razorpay) pending
+- ⏳ AI insights implementation pending
+
+### Next Steps
+1. Implement JWT-based authentication
+2. Connect mobile app to backend APIs
+3. Implement real Razorpay payment flow
+4. Add AI-powered spending insights
+5. Implement transaction history UI
+6. Add budget and goals management screens
+
+## 🤝 Contributing
+
+This is a personal project. For major changes, please open an issue first.
+
+## 📄 License
+
+Private project - All rights reserved
+
+## 👤 Author
 
 Milton Raj
 
 ---
 
-**Note**: This app currently uses mock data for demonstration. Backend integration and real SMS parsing will be implemented in the next phase.
+**Smart Spend** - Making personal finance management intelligent and effortless.
