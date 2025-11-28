@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime, Date
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, DateTime, Date, Text
 from sqlalchemy.orm import relationship
 from .database import Base
 from datetime import datetime
@@ -111,3 +111,24 @@ class AuthSession(Base):
     expires_at = Column(DateTime)
 
     user = relationship("User", back_populates="auth_sessions")
+
+class ActivityLog(Base):
+    __tablename__ = "activity_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    action_type = Column(String)  # signup, purchase, transaction, login, etc.
+    description = Column(String)
+    metadata = Column(String)  # JSON string for additional data
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Alert(Base):
+    __tablename__ = "alerts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(String)  # info, warning, critical
+    title = Column(String)
+    message = Column(String)
+    severity = Column(String)  # low, medium, high
+    is_dismissed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

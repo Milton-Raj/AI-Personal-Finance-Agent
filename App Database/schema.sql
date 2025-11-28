@@ -32,12 +32,15 @@ CREATE TABLE IF NOT EXISTS transactions (
     user_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     category_id INTEGER,
+    merchant_name TEXT,
+    payment_method_id INTEGER,
     note TEXT,
     date DATETIME NOT NULL,
     type TEXT CHECK(type IN ('income', 'expense')) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (category_id) REFERENCES categories(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
 );
 
 -- Budgets Table
@@ -100,3 +103,20 @@ INSERT OR IGNORE INTO categories (name, type, icon, color, is_default) VALUES
 ('Shopping', 'expense', 'cart-outline', '#F472B6', 1),
 ('Entertainment', 'expense', 'film-outline', '#A78BFA', 1),
 ('Bills', 'expense', 'receipt-outline', '#FBBF24', 1);
+
+-- Subscriptions Table
+CREATE TABLE IF NOT EXISTS subscriptions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    amount REAL NOT NULL,
+    billing_cycle TEXT CHECK(billing_cycle IN ('monthly', 'yearly', 'weekly')) DEFAULT 'monthly',
+    next_billing_date DATE,
+    category_id INTEGER,
+    payment_method_id INTEGER,
+    status TEXT CHECK(status IN ('active', 'cancelled')) DEFAULT 'active',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id)
+);
