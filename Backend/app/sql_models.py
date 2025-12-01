@@ -119,7 +119,7 @@ class ActivityLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     action_type = Column(String)  # signup, purchase, transaction, login, etc.
     description = Column(String)
-    metadata = Column(String)  # JSON string for additional data
+    meta_data = Column(String)  # JSON string for additional data
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Alert(Base):
@@ -132,3 +132,26 @@ class Alert(Base):
     severity = Column(String)  # low, medium, high
     is_dismissed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    name = Column(String)
+    amount = Column(Float)
+    billing_cycle = Column(String, default="monthly")
+    next_billing_date = Column(Date)
+    category_id = Column(Integer, ForeignKey("categories.id"))
+    payment_method_id = Column(Integer, ForeignKey("payment_methods.id"))
+    status = Column(String, default="active")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="subscriptions")
+    category = relationship("Category", back_populates="subscriptions")
+    payment_method = relationship("PaymentMethod", back_populates="subscriptions")
+
+# Update User relationship
+User.subscriptions = relationship("Subscription", back_populates="user")
+Category.subscriptions = relationship("Subscription", back_populates="category")
+PaymentMethod.subscriptions = relationship("Subscription", back_populates="payment_method")
