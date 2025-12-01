@@ -65,7 +65,82 @@ export const adminService = {
     createGoal: async (goalData) => {
         const response = await api.post('/admin/analytics/goals', goalData);
         return response.data;
-    }
+    },
+    // User CRUD
+    createUser: async (userData) => {
+        const response = await api.post('/admin/users', userData);
+        return response.data;
+    },
+    getUserDetail: async (userId) => {
+        const response = await api.get(`/admin/users/${userId}`);
+        return response.data;
+    },
+    updateUser: async (userId, userData) => {
+        const response = await api.put(`/admin/users/${userId}`, userData);
+        return response.data;
+    },
+    deleteUser: async (userId) => {
+        const response = await api.delete(`/admin/users/${userId}`);
+        return response.data;
+    },
+};
+
+// Coins Service
+export const coinsService = {
+    getRules: async () => {
+        const response = await api.get('/coins/rules');
+        return response.data;
+    },
+    createRule: async (ruleData) => {
+        const response = await api.post('/coins/rules', ruleData);
+        return response.data;
+    },
+    updateRule: async (ruleId, ruleData) => {
+        const response = await api.put(`/coins/rules/${ruleId}`, ruleData);
+        return response.data;
+    },
+    deleteRule: async (ruleId) => {
+        const response = await api.delete(`/coins/rules/${ruleId}`);
+        return response.data;
+    },
+    getTransactions: async (userId = null) => {
+        const url = userId ? `/coins/transactions?user_id=${userId}` : '/coins/transactions';
+        const response = await api.get(url);
+        return response.data;
+    },
+    createTransaction: async (transactionData) => {
+        const response = await api.post('/coins/transactions', transactionData);
+        return response.data;
+    },
+    getUserBalance: async (userId) => {
+        const response = await api.get(`/coins/balance/${userId}`);
+        return response.data;
+    },
+};
+
+// Notifications Service
+export const notificationsService = {
+    getAll: async (userId = null) => {
+        const url = userId ? `/notifications?user_id=${userId}` : '/notifications';
+        const response = await api.get(url);
+        return response.data;
+    },
+    getDetail: async (notificationId) => {
+        const response = await api.get(`/notifications/${notificationId}`);
+        return response.data;
+    },
+    create: async (notificationData) => {
+        const response = await api.post('/notifications', notificationData);
+        return response.data;
+    },
+    markAsRead: async (notificationId) => {
+        const response = await api.put(`/notifications/${notificationId}/read`);
+        return response.data;
+    },
+    delete: async (notificationId) => {
+        const response = await api.delete(`/notifications/${notificationId}`);
+        return response.data;
+    },
 };
 
 export default api;
