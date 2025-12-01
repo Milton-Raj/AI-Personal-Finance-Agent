@@ -155,3 +155,47 @@ class Subscription(Base):
 User.subscriptions = relationship("Subscription", back_populates="user")
 Category.subscriptions = relationship("Subscription", back_populates="category")
 PaymentMethod.subscriptions = relationship("Subscription", back_populates="payment_method")
+
+class CoinRule(Base):
+    __tablename__ = "coin_rules"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    description = Column(String)
+    action_type = Column(String)  # signup, transaction, referral, etc.
+    coins_awarded = Column(Integer)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class CoinTransaction(Base):
+    __tablename__ = "coin_transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    amount = Column(Integer)  # Positive for credit, negative for debit
+    transaction_type = Column(String)  # earned, redeemed, bonus, etc.
+    description = Column(String)
+    rule_id = Column(Integer, ForeignKey("coin_rules.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="coin_transactions")
+    rule = relationship("CoinRule", backref="transactions")
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Null for system-wide
+    title = Column(String)
+    message = Column(String)
+    notification_type = Column(String)  # info, warning, success, error
+    is_read = Column(Boolean, default=False)
+    link = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="notifications")
+
+# Update User relationships
+User.coin_transactions = relationship("CoinTransaction", back_populates="user")
+User.notifications = relationship("Notification", back_populates="user")
