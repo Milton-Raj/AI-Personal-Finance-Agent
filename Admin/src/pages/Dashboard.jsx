@@ -104,6 +104,8 @@ const Dashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [dateRange, setDateRange] = useState('7days');
+    const [customStartDate, setCustomStartDate] = useState('');
+    const [customEndDate, setCustomEndDate] = useState('');
     const { theme, toggleTheme } = useTheme();
 
     // Premium features state
@@ -122,9 +124,26 @@ const Dashboard = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try {
+                // Calculate dates based on range
+                let startDate = null;
+                let endDate = new Date().toISOString();
+
+                if (dateRange !== 'custom') {
+                    const end = new Date();
+                    const start = new Date();
+                    if (dateRange === '7days') start.setDate(end.getDate() - 7);
+                    if (dateRange === '30days') start.setDate(end.getDate() - 30);
+                    if (dateRange === '90days') start.setDate(end.getDate() - 90);
+                    startDate = start.toISOString();
+                } else if (customStartDate && customEndDate) {
+                    startDate = new Date(customStartDate).toISOString();
+                    endDate = new Date(customEndDate).toISOString();
+                }
+
                 const [statsData, quickStatsData, activityData, performersData, alertsData, revenueData] = await Promise.all([
-                    adminService.getStats(),
+                    adminService.getStats(startDate, endDate),
                     adminService.getQuickStats(),
                     adminService.getActivityFeed(20),
                     adminService.getTopPerformers(),
@@ -145,7 +164,7 @@ const Dashboard = () => {
             }
         };
         fetchData();
-    }, [dateRange]);
+    }, [dateRange, customStartDate, customEndDate]);
 
     const handleDismissAlert = (alertId) => {
         setAlerts(alerts.filter(alert => alert.id !== alertId));
@@ -240,15 +259,24 @@ const Dashboard = () => {
                             <option value="custom">Custom Range</option>
                         </select>
 
-                        {/* Calendar Icon */}
-                        <Calendar className="w-5 h-5 text-gray-400" />
-
-                        {/* Date Picker Input */}
-                        <input
-                            type="date"
-                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer hover:bg-white/10 transition-all"
-                            placeholder="Select date"
-                        />
+                        {/* Custom Date Range Inputs */}
+                        {dateRange === 'custom' && (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="date"
+                                    value={customStartDate}
+                                    onChange={(e) => setCustomStartDate(e.target.value)}
+                                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer hover:bg-white/10 transition-all"
+                                />
+                                <span className="text-gray-400">-</span>
+                                <input
+                                    type="date"
+                                    value={customEndDate}
+                                    onChange={(e) => setCustomEndDate(e.target.value)}
+                                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer hover:bg-white/10 transition-all"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Export Options + Theme Toggle */}

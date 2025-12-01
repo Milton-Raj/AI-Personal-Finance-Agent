@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 
 from ..database import get_db
-from ..models import Transaction, Category, Subscription, PaymentMethod, User
+from ..sql_models import Transaction, Category, Subscription, PaymentMethod, User
 from ..services.sms_parser import SMSParser
 
 router = APIRouter(
@@ -34,7 +34,7 @@ class HomeDataResponse(BaseModel):
 
 # --- Endpoints ---
 
-@POST("/sms/process", response_model=SMSResponse)
+@router.post("/sms/process", response_model=SMSResponse)
 def process_sms(request: SMSRequest, db: Session = Depends(get_db)):
     """
     Receives an SMS text, parses it, and stores the transaction/subscription.
@@ -133,7 +133,7 @@ def process_sms(request: SMSRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@GET("/home", response_model=HomeDataResponse)
+@router.get("/home", response_model=HomeDataResponse)
 def get_home_data(user_id: int, db: Session = Depends(get_db)):
     """
     Aggregates data for the Mobile Home Page.

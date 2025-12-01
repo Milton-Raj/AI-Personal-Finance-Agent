@@ -135,30 +135,42 @@ def get_all_subscriptions(
     return result
 
 @router.get("/stats", response_model=DashboardStats)
-def get_dashboard_stats(db: Session = Depends(get_db)):
+def get_dashboard_stats(
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: Session = Depends(get_db)
+):
     """
-    Get overall dashboard statistics
+    Get overall dashboard statistics with optional date filtering
     """
-    # Total users
-    total_users = db.query(func.count(User.id)).scalar() or 0
+    # Base queries
+    user_query = db.query(func.count(User.id))
+    premium_query = db.query(func.count(User.id)).filter(User.is_premium_member == True)
+    tx_query = db.query(func.count(Transaction.id))
+    revenue_query = db.query(func.sum(Transaction.amount)).filter(Transaction.type == 'expense')
+    sub_query = db.query(func.count(Subscription.id)).filter(Subscription.status == 'active')
+
+    # Apply date filters if provided
+    if start_date:
+        user_query = user_query.filter(User.created_at >= start_date)
+        premium_query = premium_query.filter(User.created_at >= start_date)
+        tx_query = tx_query.filter(Transaction.date >= start_date)
+        revenue_query = revenue_query.filter(Transaction.date >= start_date)
+        sub_query = sub_query.filter(Subscription.created_at >= start_date)
     
-    # Premium users
-    premium_users = db.query(func.count(User.id)).filter(
-        User.is_premium_member == True
-    ).scalar() or 0
-    
-    # Total transactions
-    total_transactions = db.query(func.count(Transaction.id)).scalar() or 0
-    
-    # Total revenue (sum of all expense transactions)
-    total_revenue = db.query(func.sum(Transaction.amount)).filter(
-        Transaction.type == 'expense'
-    ).scalar() or 0.0
-    
-    # Active subscriptions
-    active_subs = db.query(func.count(Subscription.id)).filter(
-        Subscription.status == 'active'
-    ).scalar() or 0
+    if end_date:
+        user_query = user_query.filter(User.created_at <= end_date)
+        premium_query = premium_query.filter(User.created_at <= end_date)
+        tx_query = tx_query.filter(Transaction.date <= end_date)
+        revenue_query = revenue_query.filter(Transaction.date <= end_date)
+        sub_query = sub_query.filter(Subscription.created_at <= end_date)
+
+    # Execute queries
+    total_users = user_query.scalar() or 0
+    premium_users = premium_query.scalar() or 0
+    total_transactions = tx_query.scalar() or 0
+    total_revenue = revenue_query.scalar() or 0.0
+    active_subs = sub_query.scalar() or 0
     
     return DashboardStats(
         total_users=total_users,

@@ -17,7 +17,7 @@ from .services import SMSParser, LeakDetector, AlternativeSuggester
 models.Base.metadata.create_all(bind=engine)
 
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import auth, users, transactions, budgets, goals, categories, analytics, admin, mobile, coins, notifications
+from .routers import auth, users, admin, mobile, coins, notifications
 
 app = FastAPI(title="AI Personal Finance API")
 
@@ -33,11 +33,11 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth.router)
 app.include_router(users.router)
-app.include_router(transactions.router)
-app.include_router(budgets.router)
-app.include_router(goals.router)
-app.include_router(categories.router)
-app.include_router(analytics.router)
+# app.include_router(transactions.router) # Missing
+# app.include_router(budgets.router) # Missing
+# app.include_router(goals.router) # Missing
+# app.include_router(categories.router) # Missing
+# app.include_router(analytics.router) # Missing
 app.include_router(admin.router)
 app.include_router(mobile.router)
 app.include_router(coins.router)

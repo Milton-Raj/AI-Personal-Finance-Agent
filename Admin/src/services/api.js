@@ -1,15 +1,21 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://127.0.0.1:8002',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 export const adminService = {
-    getStats: async () => {
-        const response = await api.get('/admin/stats');
+    getStats: async (startDate, endDate) => {
+        let url = '/admin/stats';
+        const params = [];
+        if (startDate) params.push(`start_date=${startDate}`);
+        if (endDate) params.push(`end_date=${endDate}`);
+        if (params.length > 0) url += `?${params.join('&')}`;
+
+        const response = await api.get(url);
         return response.data;
     },
     getUsers: async () => {
