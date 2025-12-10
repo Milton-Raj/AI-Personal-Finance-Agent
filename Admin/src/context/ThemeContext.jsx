@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
@@ -11,18 +11,19 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        const saved = localStorage.getItem('admin-theme');
-        return saved || 'dark';
-    });
+    const theme = 'dark'; // Always use dark theme
 
     useEffect(() => {
-        localStorage.setItem('admin-theme', theme);
-        document.documentElement.setAttribute('data-theme', theme);
-    }, [theme]);
+        // Remove any stored theme preference
+        localStorage.removeItem('admin-theme');
+        // Force dark theme
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.removeAttribute('data-theme'); // Remove attribute to use default dark theme
+    }, []);
 
     const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        // Disabled - always dark theme
+        console.log('Theme toggle disabled - using dark theme only');
     };
 
     return (
