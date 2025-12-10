@@ -9,6 +9,9 @@ import {
     Download,
     FileText
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Papa from 'papaparse';
 import {
     ResponsiveContainer,
     LineChart,
@@ -115,6 +118,115 @@ const Dashboard = () => {
             day: i,
             value: Math.floor(baseValue * (1 + (Math.random() - 0.5) * variance))
         }));
+    };
+
+    // Export functions
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+
+        // Add title
+        doc.setFontSize(20);
+        doc.text('Smart Spend AI - Analytics Report', 14, 22);
+
+        // Add date
+        doc.setFontSize(10);
+        doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+
+        // Add stats summary
+        if (stats) {
+            doc.setFontSize(14);
+            doc.text('Summary Statistics', 14, 45);
+
+            const statsData = [
+                ['Total Users', stats.total_users?.toString() || '0'],
+                ['Premium Users', stats.premium_users?.toString() || '0'],
+                ['Total Revenue', `$${stats.total_revenue?.toFixed(2) || '0.00'}`],
+                ['Total Transactions', stats.total_transactions?.toString() || '0'],
+                ['Total Products', stats.total_products?.toString() || '0'],
+                ['Total Coins', stats.total_coins?.toString() || '0']
+            ];
+
+            doc.autoTable({
+                startY: 50,
+                head: [['Metric', 'Value']],
+                body: statsData,
+                theme: 'grid',
+                headStyles: { fillColor: [108, 99, 255] }
+            });
+        }
+
+        // Add activity feed if available
+        if (activityFeed && activityFeed.length > 0) {
+            doc.addPage();
+            doc.setFontSize(14);
+            doc.text('Recent Activity', 14, 22);
+
+            const activityData = activityFeed.slice(0, 20).map(activity => [
+                activity.type || 'N/A',
+                activity.user || 'N/A',
+                activity.description || 'N/A',
+                new Date(activity.timestamp).toLocaleString()
+            ]);
+
+            doc.autoTable({
+                startY: 30,
+                head: [['Type', 'User', 'Description', 'Time']],
+                body: activityData,
+                theme: 'striped',
+                headStyles: { fillColor: [108, 99, 255] }
+            });
+        }
+
+        // Save the PDF
+        doc.save(`smart-spend-report-${new Date().toISOString().split('T')[0]}.pdf`);
+    };
+
+    const exportToCSV = () => {
+        // Prepare data for CSV export
+        const csvData = [];
+
+        // Add summary stats
+        csvData.push(['Smart Spend AI - Analytics Report']);
+        csvData.push(['Generated', new Date().toLocaleString()]);
+        csvData.push([]);
+
+        if (stats) {
+            csvData.push(['Summary Statistics']);
+            csvData.push(['Metric', 'Value']);
+            csvData.push(['Total Users', stats.total_users || 0]);
+            csvData.push(['Premium Users', stats.premium_users || 0]);
+            csvData.push(['Total Revenue', `$${stats.total_revenue?.toFixed(2) || '0.00'}`]);
+            csvData.push(['Total Transactions', stats.total_transactions || 0]);
+            csvData.push(['Total Products', stats.total_products || 0]);
+            csvData.push(['Total Coins', stats.total_coins || 0]);
+            csvData.push([]);
+        }
+
+        // Add activity feed
+        if (activityFeed && activityFeed.length > 0) {
+            csvData.push(['Recent Activity']);
+            csvData.push(['Type', 'User', 'Description', 'Time']);
+            activityFeed.forEach(activity => {
+                csvData.push([
+                    activity.type || 'N/A',
+                    activity.user || 'N/A',
+                    activity.description || 'N/A',
+                    new Date(activity.timestamp).toLocaleString()
+                ]);
+            });
+        }
+
+        // Convert to CSV and download
+        const csv = Papa.unparse(csvData);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `smart-spend-report-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     useEffect(() => {
@@ -277,13 +389,19 @@ const Dashboard = () => {
                     {/* Right: Export Options + Theme Toggle */}
                     <div className="flex items-center gap-2">
                         {/* Export PDF */}
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
+                        <button
+                            onClick={exportToPDF}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                        >
                             <Download className="w-4 h-4 text-red-400 group-hover:scale-110 transition-transform" />
                             <span className="text-sm text-white font-medium">PDF</span>
                         </button>
 
                         {/* Export CSV */}
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
+                        <button
+                            onClick={exportToCSV}
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                        >
                             <FileText className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform" />
                             <span className="text-sm text-white font-medium">CSV</span>
                         </button>
