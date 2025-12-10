@@ -6,13 +6,8 @@ import {
     ShoppingBag,
     Wallet,
     Coins,
-    Calendar,
     Download,
-    FileText,
-    Mail,
-    ChevronDown,
-    Moon,
-    Sun
+    FileText
 } from 'lucide-react';
 import {
     ResponsiveContainer,
@@ -34,7 +29,7 @@ import ConversionFunnel from '../components/dashboard/ConversionFunnel';
 import ComparisonView from '../components/dashboard/ComparisonView';
 import UserEngagement from '../components/dashboard/UserEngagement';
 import ExportOptions from '../components/dashboard/ExportOptions';
-import { useTheme } from '../context/ThemeContext';
+
 
 const AnalyticsCard = ({ title, value, change, icon: Icon, data, chartType = 'line', color = '#60a5fa' }) => {
     const renderChart = () => {
@@ -291,58 +286,6 @@ const Dashboard = () => {
                         <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
                             <FileText className="w-4 h-4 text-green-400 group-hover:scale-110 transition-transform" />
                             <span className="text-sm text-white font-medium">CSV</span>
-                        </button>
-
-                        {/* Email Report */}
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group">
-                            <Mail className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-sm text-white font-medium">Email</span>
-                        </button>
-
-                        {/* Scheduled Reports Dropdown - Fixed z-index */}
-                        <div className="relative">
-                            <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 hover:bg-yellow-500/20 transition-all peer">
-                                <Calendar className="w-4 h-4 text-yellow-400" />
-                                <span className="text-sm text-yellow-400 font-medium">Scheduled</span>
-                                <ChevronDown className="w-4 h-4 text-yellow-400" />
-                            </button>
-
-                            {/* Dropdown Menu - Fixed with higher z-index and proper positioning */}
-                            <div className="absolute right-0 top-full mt-2 w-56 glass-card rounded-xl border border-white/10 p-3 opacity-0 invisible peer-hover:opacity-100 peer-hover:visible hover:opacity-100 hover:visible transition-all z-[9999] shadow-2xl">
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 cursor-pointer">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-green-400" />
-                                            <span className="text-sm text-white">Weekly Summary</span>
-                                        </div>
-                                        <span className="text-xs text-green-400">Active</span>
-                                    </div>
-                                    <div className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 cursor-pointer">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-green-400" />
-                                            <span className="text-sm text-white">Monthly Report</span>
-                                        </div>
-                                        <span className="text-xs text-green-400">Active</span>
-                                    </div>
-                                    <div className="border-t border-white/10 my-2" />
-                                    <button className="w-full text-left p-2 rounded-lg hover:bg-white/5 text-sm text-blue-400">
-                                        + Configure Schedule
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Theme Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                            aria-label="Toggle theme"
-                        >
-                            {theme === 'dark' ? (
-                                <Sun className="w-5 h-5 text-gray-400 group-hover:text-yellow-400 transition-colors" />
-                            ) : (
-                                <Moon className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-                            )}
                         </button>
                     </div>
                 </div>
