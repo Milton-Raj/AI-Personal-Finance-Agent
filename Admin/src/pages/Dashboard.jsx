@@ -101,7 +101,7 @@ const Dashboard = () => {
     const [dateRange, setDateRange] = useState('7days');
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
-    const { theme, toggleTheme } = useTheme();
+
 
     // Premium features state
     const [quickStats, setQuickStats] = useState([]);
