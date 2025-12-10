@@ -148,7 +148,7 @@ const Dashboard = () => {
                     ['Total Coins', stats.total_coins?.toString() || '0']
                 ];
 
-                doc.autoTable({
+                autoTable(doc, {
                     startY: 50,
                     head: [['Metric', 'Value']],
                     body: statsData,
@@ -170,7 +170,7 @@ const Dashboard = () => {
                     new Date(activity.timestamp).toLocaleString()
                 ]);
 
-                doc.autoTable({
+                autoTable(doc, {
                     startY: 30,
                     head: [['Type', 'User', 'Description', 'Time']],
                     body: activityData,
