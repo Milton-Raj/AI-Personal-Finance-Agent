@@ -122,63 +122,72 @@ const Dashboard = () => {
 
     // Export functions
     const exportToPDF = () => {
-        const doc = new jsPDF();
+        try {
+            console.log('Starting PDF export...');
+            const doc = new jsPDF();
 
-        // Add title
-        doc.setFontSize(20);
-        doc.text('Smart Spend AI - Analytics Report', 14, 22);
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Smart Spend AI - Analytics Report', 14, 22);
 
-        // Add date
-        doc.setFontSize(10);
-        doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+            // Add date
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
 
-        // Add stats summary
-        if (stats) {
-            doc.setFontSize(14);
-            doc.text('Summary Statistics', 14, 45);
+            // Add stats summary
+            if (stats) {
+                doc.setFontSize(14);
+                doc.text('Summary Statistics', 14, 45);
 
-            const statsData = [
-                ['Total Users', stats.total_users?.toString() || '0'],
-                ['Premium Users', stats.premium_users?.toString() || '0'],
-                ['Total Revenue', `$${stats.total_revenue?.toFixed(2) || '0.00'}`],
-                ['Total Transactions', stats.total_transactions?.toString() || '0'],
-                ['Total Products', stats.total_products?.toString() || '0'],
-                ['Total Coins', stats.total_coins?.toString() || '0']
-            ];
+                const statsData = [
+                    ['Total Users', stats.total_users?.toString() || '0'],
+                    ['Premium Users', stats.premium_users?.toString() || '0'],
+                    ['Total Revenue', `$${stats.total_revenue?.toFixed(2) || '0.00'}`],
+                    ['Total Transactions', stats.total_transactions?.toString() || '0'],
+                    ['Total Products', stats.total_products?.toString() || '0'],
+                    ['Total Coins', stats.total_coins?.toString() || '0']
+                ];
 
-            doc.autoTable({
-                startY: 50,
-                head: [['Metric', 'Value']],
-                body: statsData,
-                theme: 'grid',
-                headStyles: { fillColor: [108, 99, 255] }
-            });
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Metric', 'Value']],
+                    body: statsData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [108, 99, 255] }
+                });
+            }
+
+            // Add activity feed if available
+            if (activityFeed && activityFeed.length > 0) {
+                doc.addPage();
+                doc.setFontSize(14);
+                doc.text('Recent Activity', 14, 22);
+
+                const activityData = activityFeed.slice(0, 20).map(activity => [
+                    activity.type || 'N/A',
+                    activity.user || 'N/A',
+                    activity.description || 'N/A',
+                    new Date(activity.timestamp).toLocaleString()
+                ]);
+
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Type', 'User', 'Description', 'Time']],
+                    body: activityData,
+                    theme: 'striped',
+                    headStyles: { fillColor: [108, 99, 255] }
+                });
+            }
+
+            // Save the PDF
+            const filename = `smart-spend-report-${new Date().toISOString().split('T')[0]}.pdf`;
+            console.log('Saving PDF as:', filename);
+            doc.save(filename);
+            console.log('PDF export completed successfully');
+        } catch (error) {
+            console.error('Error exporting PDF:', error);
+            alert('Failed to export PDF. Please check the console for details.');
         }
-
-        // Add activity feed if available
-        if (activityFeed && activityFeed.length > 0) {
-            doc.addPage();
-            doc.setFontSize(14);
-            doc.text('Recent Activity', 14, 22);
-
-            const activityData = activityFeed.slice(0, 20).map(activity => [
-                activity.type || 'N/A',
-                activity.user || 'N/A',
-                activity.description || 'N/A',
-                new Date(activity.timestamp).toLocaleString()
-            ]);
-
-            doc.autoTable({
-                startY: 30,
-                head: [['Type', 'User', 'Description', 'Time']],
-                body: activityData,
-                theme: 'striped',
-                headStyles: { fillColor: [108, 99, 255] }
-            });
-        }
-
-        // Save the PDF
-        doc.save(`smart-spend-report-${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     const exportToCSV = () => {
