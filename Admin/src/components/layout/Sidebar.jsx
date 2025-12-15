@@ -16,7 +16,7 @@ import {
     Coins
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = () => {
     const location = useLocation();
