@@ -16,10 +16,12 @@ import {
     Coins
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
     const location = useLocation();
     const [isCoinsOpen, setIsCoinsOpen] = useState(false);
+    const { logout } = useAuth();
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -140,7 +142,10 @@ const Sidebar = () => {
 
             {/* User Profile / Logout */}
             <div className="p-4 border-t border-white/10">
-                <button className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 transition-colors text-left group">
+                <button
+                    onClick={logout}
+                    className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-white/5 transition-colors text-left group"
+                >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-white/10 flex items-center justify-center">
                         <span className="font-bold text-sm">AD</span>
                     </div>
