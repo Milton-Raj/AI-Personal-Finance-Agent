@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
 
@@ -14,10 +15,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Check auth status after a short delay to show branding
-    Future.delayed(const Duration(seconds: 2), () {
-      ref.read(authProvider.notifier).checkAuthStatus();
-    });
+    _navigate();
+  }
+
+  Future<void> _navigate() async {
+    // Show splash for 2 seconds
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (!mounted) return;
+    
+    // Check auth status
+    await ref.read(authProvider.notifier).checkAuthStatus();
+    
+    if (!mounted) return;
+    
+    // Navigate based on auth status
+    final isAuthenticated = ref.read(authProvider).isAuthenticated;
+    if (isAuthenticated) {
+      context.go('/home');
+    } else {
+      context.go('/login');
+    }
   }
 
   @override
